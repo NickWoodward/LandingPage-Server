@@ -19,4 +19,7 @@ router.post(
     itemsController.postItem
 );
 
+// DELETE /item-list/items/:itemid
+router.delete('/items/:itemid', itemsController.deleteItem);
+
 module.exports = router;

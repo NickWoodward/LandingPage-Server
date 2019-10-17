@@ -4,8 +4,7 @@ const sequelize = require('../util/database');
 
 const ListItem = sequelize.define('listItem', {
     id: {
-        type: Sequelize.INTEGER,
-        autoIncrement: true,
+        type: Sequelize.STRING,
         allowNull: false,
         primaryKey: true
     },

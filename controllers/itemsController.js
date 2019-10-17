@@ -18,12 +18,15 @@ exports.getItems = (req, res, next) => {
 exports.postItem = (req, res, next) => {
     const errors = validationResult(req);
     console.log(errors.array());
+    console.log('Adding');
     if (!errors.isEmpty()) {
         return res.status(422).json({
             message: 'Validation failed, incorrect input',
             errors: errors.array()
         });
     }
+
+    console.log(req.body.id);
 
     // Create DB entry if item with same title and author don't exist
     ListItem.findOrCreate({ 
@@ -34,6 +37,7 @@ exports.postItem = (req, res, next) => {
             ]
         },
          defaults: {
+            id: req.body.id,
             title: req.body.title,
             content: req.body.content,
             author: req.body.author,
@@ -42,7 +46,6 @@ exports.postItem = (req, res, next) => {
 
     })
         .then(result => {
-            console.log(result[0], result[1]);
             // result[1] === true  : New object created
             // result[1] === false : Object already present
 
@@ -60,4 +63,27 @@ exports.postItem = (req, res, next) => {
         }).catch(err => {
             console.log(err);
     });
+};
+
+exports.deleteItem = (req, res, next) => {
+    const itemid = req.params.itemid;
+
+    console.log(`Item to be deleted: ${itemid}`);
+
+    ListItem.findByPk(itemid)
+        .then(item => {
+            if(!item) {
+                const error = new Error('Could not find item');
+                error.statusCode = 404;
+                throw error;
+            }
+
+            // check logged in user
+            if(item)
+                return item.destroy();
+        })
+        .then(result => {
+            res.status(200).json({ message: 'Deleted post' });
+        })
+        .catch(err => console.log(err));
 };
