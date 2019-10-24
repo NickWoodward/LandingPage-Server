@@ -19,7 +19,11 @@ router.post(
     itemsController.postItem
 );
 
-// DELETE /item-list/items/:itemid
+// PUT /item-list/item/itemid
+router.put('/item/:itemid', itemsController.editItem);
+
+
+// DELETE /item-list/items/itemid
 router.delete('/items/:itemid', itemsController.deleteItem);
 
 module.exports = router;

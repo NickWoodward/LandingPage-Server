@@ -17,16 +17,12 @@ exports.getItems = (req, res, next) => {
 
 exports.postItem = (req, res, next) => {
     const errors = validationResult(req);
-    console.log(errors.array());
-    console.log('Adding');
+ 
     if (!errors.isEmpty()) {
-        return res.status(422).json({
-            message: 'Validation failed, incorrect input',
-            errors: errors.array()
-        });
+        const error = new Error('Validation failled, incorrect input');
+        error.statusCode = 422;
+        throw error;
     }
-
-    console.log(req.body.id);
 
     // Create DB entry if item with same title and author don't exist
     ListItem.findOrCreate({ 
@@ -61,8 +57,11 @@ exports.postItem = (req, res, next) => {
                 });
             }
         }).catch(err => {
-            console.log(err);
-    });
+            if(!err.statusCode) {
+                err.statusCode = 500;
+            }
+            next(err);
+        });
 };
 
 exports.deleteItem = (req, res, next) => {
@@ -73,7 +72,7 @@ exports.deleteItem = (req, res, next) => {
     ListItem.findByPk(itemid)
         .then(item => {
             if(!item) {
-                const error = new Error('Could not find item');
+                const error = new Error(`Could not find item: ${itemid}`);
                 error.statusCode = 404;
                 throw error;
             }
@@ -85,5 +84,49 @@ exports.deleteItem = (req, res, next) => {
         .then(result => {
             res.status(200).json({ message: 'Deleted post' });
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+            if(!err.statusCode) {
+                err.statusCode = 500;
+            }
+            next(err);
+        });
+};
+
+exports.editItem = (req, res, next) => {
+    const itemid = req.params.itemid;
+    const errors = validationResult(req);
+
+    console.log(errors);
+ 
+    if (!errors.isEmpty()) {
+        const error = new Error(`Validation failed, incorrect input`);
+        error.statusCode = 422;
+        throw error;
+    }
+
+    console.log(req.body);
+    const title = req.body.title;
+    const content = req.body.content;
+    const author = req.body.author;
+    const completed = req.body.completed; 
+
+    ListItem.findByPk(itemid)
+        .then(item => {
+            item.title = title;
+            item.content = content;
+            item.author = author;
+            item.completed = completed;
+
+            return item.save();
+        })
+        .then(result => {
+            res.send(200).sendStatus('Item successfully edited');
+        })
+        .catch(err => {
+            if(!err.statusCode)
+                err.statusCode = 500;
+
+            next(err);
+        });
+
 };
