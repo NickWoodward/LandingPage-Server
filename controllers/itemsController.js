@@ -95,8 +95,6 @@ exports.deleteItem = (req, res, next) => {
 exports.editItem = (req, res, next) => {
     const itemid = req.params.itemid;
     const errors = validationResult(req);
-
-    console.log(errors);
  
     if (!errors.isEmpty()) {
         const error = new Error(`Validation failed, incorrect input`);
@@ -120,7 +118,7 @@ exports.editItem = (req, res, next) => {
             return item.save();
         })
         .then(result => {
-            res.send(200).sendStatus('Item successfully edited');
+            res.sendStatus(200);
         })
         .catch(err => {
             if(!err.statusCode)
