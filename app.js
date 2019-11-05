@@ -1,10 +1,10 @@
 require('dotenv').config();
 
-
 const express = require('express');
 const bodyParser = require('body-parser');
 const sequelize = require('./util/database');
 const itemRoutes = require('./routes/items');
+const authRoutes = require('./routes/auth');
 const ListItem = require('./models/listItem');
 
 const app = express();
@@ -21,12 +21,14 @@ app.use((req, res, next) => {
 });
 
 app.use('/item-list', itemRoutes);
+app.use('/auth', authRoutes);
 
 app.use((error, req, res, next) => {
     console.log(error);
     const status = error.statusCode || 500;
     const message = error.message;
-    res.status(status).json({message: message});
+    const data = error.data;
+    res.status(status).json({message: message, data: data});
 });
 
 sequelize.authenticate()

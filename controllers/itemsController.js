@@ -102,7 +102,6 @@ exports.editItem = (req, res, next) => {
         throw error;
     }
 
-    console.log(req.body);
     const title = req.body.title;
     const content = req.body.content;
     const author = req.body.author;
@@ -118,7 +117,7 @@ exports.editItem = (req, res, next) => {
             return item.save();
         })
         .then(result => {
-            res.sendStatus(200);
+            res.status(200).json({ message: `(${itemid}) Item edited` });
         })
         .catch(err => {
             if(!err.statusCode)
