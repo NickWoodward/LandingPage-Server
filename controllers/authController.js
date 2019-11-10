@@ -35,3 +35,21 @@ exports.signup = (req, res, next) => {
             next(err);
         });
 };
+
+exports.login = (req, res, next) => {
+    console.log('login');
+    const errors = validationResult(req);
+
+    if(!errors.isEmpty()) {
+        const error = new Error('Validation Failed.');
+        errors.statusCode = 422;
+        error.data = errors.array();
+        throw error;
+    } 
+    console.log('hello');
+    const email = req.body.email;
+    const pass = req.body.password;
+
+    console.log(email, pass);
+    res.status(200).json({ message: 'Logged in.'});
+};

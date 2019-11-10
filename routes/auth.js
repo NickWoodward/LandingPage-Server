@@ -33,4 +33,19 @@ router.put('/signup', [
         })
 ], authController.signup);
 
+
+router.put('/login', 
+[
+    body('email')
+        .isEmail()
+        .withMessage('Please enter a valid email address')
+        // .custom(value => {
+        //     return User.findOne({ where: { email: value } })
+        //         .then(user => {
+        //             if(!user) Promise.reject('No such user exists'); 
+        //         });
+        // })
+], 
+authController.login);
+
 module.exports = router;
