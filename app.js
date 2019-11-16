@@ -24,10 +24,12 @@ app.use('/item-list', itemRoutes);
 app.use('/auth', authRoutes);
 
 app.use((error, req, res, next) => {
-    console.log(error);
     const status = error.statusCode || 500;
     const message = error.message;
-    const data = error.data;
+    const data = error.data || 'No Data';
+
+    console.log(status, message, data);
+
     res.status(status).json({message: message, data: data});
 });
 
